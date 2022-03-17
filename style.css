@@ -32,7 +32,6 @@
     width: 10px;
     height: 10px;
   }
-
   #grid-container div.wall {
     background-color: black;
   }
@@ -53,10 +52,16 @@
   }
 
   #buttons {
+    display: flex;
+    flex-direction: column;
+    margin-top: 32px;
+  }
+
+  #buttons .topButtons, #buttons .botButtons {
     display: inline-flex;
     width: 100%;
     justify-content: center;
-    margin-top: 32px;
+    padding: 8px 0;
   }
 
   #buttons button:nth-child(n) {

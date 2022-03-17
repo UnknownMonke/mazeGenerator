@@ -14,11 +14,17 @@
       </div>
 
       <div id="buttons">
-        <button onclick="maze.resetGrid()">Reset</button>
-        <button onclick="maze.primSimpleSingle()">Prim Simple Single Opening</button>
-        <button onclick="maze.primSimple()">Prim Simple</button>
-        <button onclick="maze.primWeighted()">Prim Weighted</button>
-        <button onclick="maze.iterativeDFS()">DFS Double Cell</button>
+        <div class="topButtons">
+          <button onclick="maze.resetGrid()">Reset</button>
+          <button onclick="maze.primSimpleSingle()">Prim Simple Single Opening</button>
+          <button onclick="maze.primSimple()">Prim Simple</button>
+          <button onclick="maze.primWeighted()">Prim Weighted</button>
+          <button onclick="maze.iterativeDFS()">DFS Double Cell</button>
+        </div>
+        <div class="botButtons">
+          <button onclick="maze.pathfinder()">Find path</button>
+        </div>
+
       </div>
     </div>
     

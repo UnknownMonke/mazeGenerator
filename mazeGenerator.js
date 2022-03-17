@@ -9,11 +9,13 @@
     const maze = {
         mazeSize: mazeSize,
         cellMap: cellMap,
+        path: [],
         resetGrid: resetGrid,
         primSimpleSingle: primSimpleSingle,
         primSimple: primSimple,
         primWeighted: primWeighted,
-        iterativeDFS: iterativeDFS
+        iterativeDFS: iterativeDFS,
+        pathfinder: pathfinder
     };
 
 
@@ -58,6 +60,28 @@
 
     function drawCell(x, y, cellType) {
         document.getElementById(`[${x},${y}]`).className = cellType;
+    }
+
+    function equals(c1, c2) {
+        return c1[0] === c2[0] && c1[1] === c2[1];
+    }
+
+    /**
+     * Find a cell with a certain value.
+     * 
+     * @param {Array} map cellMap.
+     * @param {String} value the value of the cell to find.
+     * @returns the cell if it exists, or an empty array.
+     */
+    function findCell(map, value) {
+        for(let i = 0; i < map.length; i++) {
+            for(let j = 0; j < map[0].length; j++) {
+                if(map[i][j] === value) {
+                    return [i,j];
+                }
+            } 
+        }
+        return [];
     }
 
     // Choose a random cell on the extremities of the maze.
@@ -137,7 +161,7 @@
      * 
      * Here the wall N and its direct neighbor on the right will be opened.
      */
-     function checkNeighbors(x, y, direction) {
+    function checkNeighbors(x, y, direction) {
 
         if( direction === 'E' && isWall(x, y+1) && isWall(x-1, y+1) && isWall(x+1, y+1) && isWall(x, y+2) && isWall(x-1, y+2) && isWall(x+1, y+2) ) {
             return true;
@@ -320,7 +344,7 @@
      * 
      * @returns the map of every cell of the maze, with its nature ('wall', 'passage', 'start' or 'end').
      */
-     function primWeighted() {
+    function primWeighted() {
         let frontier = [];
 
         resetGrid();
@@ -747,6 +771,155 @@
                 openableWalls.push([x, y+1, 'E']);
             }
             return openableWalls;
+        }
+    }
+
+
+    // ----------------------------------------------------
+    //                       PATHFINDING
+    // ----------------------------------------------------
+
+
+    /**
+     * Solve the maze using a simple Breadth First Search (BFS) algorithm, with early exit.
+     * 
+     * We explore each cell of the maze, and store the visited cells in a map, along with the cell we came from.
+     * 
+     * All the direct neighbors of the visited cells are stored in the frontier.
+     * The frontier expand along with the number of visited cell.
+     * 
+     * Once we reach the exit, the algorithm stops.
+     * 
+     * We also wrap the steps in an interval to animate the pathfinding process, instead of a while loop.
+     * 
+     * Algorithm:
+     * - 1 - Find the starting cell, add it to the frontier, and mark it as visited with no origin.
+     * - 2 - While the frontier is not empty:
+     *      - 1 - Pop the first added cell from the frontier and make it the current cell.
+     *      - 2 - If the cell is the exit, terminate the loop.
+     *      - 3 - Else, if one of the cell neighbor is a passage and has not been already visited:
+     *          - 1 - Push the neighbor into the frontier and mark it as visited with the current cell as origin.
+     * 
+     * ---
+     * 
+     * NOTE: using the built-in 'frontier.pop()' for step 2.1 will transform the algorithm into Depth-First Search, as the frontier becomes a stack and not a queue (last in first out).
+     * The DFS version seems faster for the farthest exits as it doesn't explore the whole maze most of the time.
+     * 
+     * ---
+     * 
+     * Once the loop terminate, we reconstruct the path using the visited map.
+     * 
+     * The function will throw errors if the maze doesn't exists or no entry or exit can be found.
+     * 
+     * @returns the path from finish to start.
+     */
+    function pathfinder() {
+        try {
+            if(cellMap.length === 0) {
+                throw 'Error: maze not generated';
+            }
+            let frontier = [];
+
+            let visited = new Map();
+            
+            let startCell = findCell(cellMap, 'start');
+            let endCell = findCell(cellMap, 'end');
+
+            if(startCell.length === 0) {
+                throw 'Error: Cannot find starting cell';
+            }
+            if(endCell.length === 0) {
+                throw 'Error: Cannot find exit cell';
+            }
+
+            // 1 - Find the starting cell, add it to the frontier, and mark it as visited with no origin.
+            frontier.push(startCell);
+            // Map entries are stringified otherwise we can't use get and has methods on objects and I want to keep it simple.
+            visited.set(startCell.toString(), []);
+            
+            // 2 - While the frontier is not empty:
+            global.currentInterval = setInterval(function() {
+
+                if(frontier.length === 0) { // Exit condition.
+                    clearInterval(global.currentInterval);
+
+                    // Update the found path
+                    maze.path = findPath(visited, startCell, endCell);
+
+                    console.log('exit');
+
+                } else {
+                    //1 - Pop the first added cell from the frontier and make it the current cell.
+                    let currentCell = frontier[0];
+                    frontier.splice(0, 1);
+
+                    // Draw the cell in blue for visualization.
+                    if(!equals(currentCell, startCell) && !equals(currentCell, endCell)) {
+                        drawCell(currentCell[0], currentCell[1], 'blue');
+                    }
+
+                    // 2 - If the cell is the exit, terminate the loop.
+                    if(equals(currentCell, endCell)) {
+                        frontier.splice(0, frontier.length);
+
+                    } else {
+                        // 3 - Else, if one of the cell neighbor is a passage and has not been already visited:
+                        // 1 - Push the neighbor into the frontier and mark it as visited with the current cell as origin.
+                        let x = currentCell[0];
+                        let y = currentCell[1];
+
+                        // The order of addition to the frontier makes the algorithm explore the same directions in the same order.
+                        visitCell(x-1, y, visited, frontier, currentCell);
+                        visitCell(x+1, y, visited, frontier, currentCell);
+                        visitCell(x, y-1, visited, frontier, currentCell);
+                        visitCell(x, y+1, visited, frontier, currentCell);
+                    }
+                }
+            }, 10);
+
+        } catch(e) {
+            console.error(e);
+        }
+       
+        // -------------------- UTILITY --------------------
+     
+        /**
+         * If one the cell neighbor at the given coordinates is a passage and has not been already visited,
+         * push the neighbor into the frontier and mark it as visited with the current cell as origin.
+         */
+        function visitCell(x, y, visited, frontier, currentCell) {
+            if(isPassage(x, y) && !visited.has([x,y].toString())) {
+                frontier.push([x, y]);
+                visited.set([x, y].toString(), currentCell);
+            }
+        }
+
+        /**
+         * Reconstruct the path using the visited map:
+         * - Each cell of the map contains the cell from where we came from.
+         * - Starting from the exit, we find the cell from which we've found the exit,
+         * then its previous cell, and so on.
+         * 
+         * @returns the path in reverse order (from finish to start).
+         */
+        function findPath(visited, startCell, endCell) {
+            let current = endCell;
+    
+            let path = [];
+    
+            while(!equals(current, startCell)) {
+                path.push(current);
+    
+                // Display
+                if(!equals(current, startCell) && !equals(current, endCell)) {
+                    drawCell(current[0], current[1], 'highlight');
+                }
+                current = visited.get(current.toString());
+            }
+            // Append the starting cell to the path.
+            path.push(startCell);
+
+            return path;
         }
     }
 
