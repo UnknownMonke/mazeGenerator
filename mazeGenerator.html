@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <script src="mazeGenerator.js" type="text/javascript"></script>
+
+    <div id="container">
+      <div id="background">
+        <div id="grid-container"></div>
+      </div>
+
+      <div id="buttons">
+        <button onclick="maze.resetGrid()">Reset</button>
+        <button onclick="maze.primSimpleSingle()">Prim Simple Single Opening</button>
+        <button onclick="maze.primSimple()">Prim Simple</button>
+        <button onclick="maze.primWeighted()">Prim Weighted</button>
+        <button onclick="maze.iterativeDFS()">DFS Double Cell</button>
+      </div>
+    </div>
+    
+  </body>
+</html>
