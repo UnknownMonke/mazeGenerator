@@ -180,7 +180,7 @@
 
 
     // ----------------------------------------------------
-    //                       ALGORITHMS
+    //                      ALGORITHMS
     // ----------------------------------------------------
 
 
@@ -776,7 +776,7 @@
 
 
     // ----------------------------------------------------
-    //                       PATHFINDING
+    //                     PATHFINDING
     // ----------------------------------------------------
 
 
@@ -786,7 +786,7 @@
      * We explore each cell of the maze, and store the visited cells in a map, along with the cell we came from.
      * 
      * All the direct neighbors of the visited cells are stored in the frontier.
-     * The frontier expand along with the number of visited cell.
+     * The frontier expand along with the number of visited cells.
      * 
      * Once we reach the exit, the algorithm stops.
      * 
@@ -843,7 +843,7 @@
                 if(frontier.length === 0) { // Exit condition.
                     clearInterval(global.currentInterval);
 
-                    // Update the found path
+                    // Update the found path.
                     maze.path = findPath(visited, startCell, endCell);
 
                     console.log('exit');
@@ -863,12 +863,11 @@
                         frontier.splice(0, frontier.length);
 
                     } else {
-                        // 3 - Else, if one of the cell neighbor is a passage and has not been already visited:
-                        // 1 - Push the neighbor into the frontier and mark it as visited with the current cell as origin.
                         let x = currentCell[0];
                         let y = currentCell[1];
 
-                        // The order of addition to the frontier makes the algorithm explore the same directions in the same order.
+                        // 3 - Else, if one of the cell neighbor is a passage and has not already been visited:
+                        // 1 - Push the neighbor into the frontier and mark it as visited with the current cell as origin.
                         visitCell(x-1, y, visited, frontier, currentCell);
                         visitCell(x+1, y, visited, frontier, currentCell);
                         visitCell(x, y-1, visited, frontier, currentCell);
@@ -884,8 +883,16 @@
         // -------------------- UTILITY --------------------
      
         /**
-         * If one the cell neighbor at the given coordinates is a passage and has not been already visited,
+         * If one of the cell neighbor at the given coordinates is a passage and has not already been visited,
          * push the neighbor into the frontier and mark it as visited with the current cell as origin.
+         * 
+         * ---
+         * 
+         * IMPORTANT: 
+         * 
+         * The order of addition to the frontier makes the algorithm explore the same directions in the same order.
+         * In a maze this is no problem since only one or two of the neighbors are valid, but on open maps it can lead to paths
+         * biased towards a specific direction.
          */
         function visitCell(x, y, visited, frontier, currentCell) {
             if(isPassage(x, y) && !visited.has([x,y].toString())) {
@@ -910,7 +917,7 @@
             while(!equals(current, startCell)) {
                 path.push(current);
     
-                // Display
+                // Display.
                 if(!equals(current, startCell) && !equals(current, endCell)) {
                     drawCell(current[0], current[1], 'highlight');
                 }
@@ -930,4 +937,5 @@
     } else {
         global.maze = maze;
     }
+
 })(this);
