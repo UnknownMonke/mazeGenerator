@@ -24,32 +24,32 @@
     // ----------------------------------------------------
 
 
-    // Check if given coordinates are in the maze.
+    // Checks if given coordinates are in the maze.
     function validate(x, y) {
         return x >= 0 && y >= 0 && x < mazeSize && y < mazeSize;
     }
 
-    // Check if given coordinates are in the maze and not on its extremities.
+    // Checks if given coordinates are in the maze and not on its extremities.
     function isNotExtremities(x, y) {
         return x > 0 && y > 0 && x < mazeSize - 1 && y < mazeSize - 1;
     }
     
-    // Return a random int between min and max - 1.
+    // Returns a random int between min and max - 1.
     function random(min, max) {
         return Math.floor(Math.random() * (max - min) + min );
     }
 
-    // Return 0 or 1 at random.
+    // Returns 0 or 1 at random.
     function randOne() {
         return Math.round(Math.random());
     }
     
-    // Change the validation conditions to ignore more or less extremities.
+    // Changes the validation conditions to ignore more or less extremities.
     function isWall(x, y) {
         return isNotExtremities(x, y) && cellMap[x][y] === 'wall';
     }
 
-    // Change the validation conditions to ignore more or less extremities.
+    // Changes the validation conditions to ignore more or less extremities.
     function isPassage(x, y) {
         return isNotExtremities(x, y) && cellMap[x][y] !== 'wall';
     }
@@ -67,7 +67,7 @@
     }
 
     /**
-     * Find a cell with a certain value.
+     * Finds a cell with a certain value.
      * 
      * @param {Array} map cellMap.
      * @param {String} value the value of the cell to find.
@@ -84,7 +84,7 @@
         return [];
     }
 
-    // Choose a random cell on the extremities of the maze.
+    // Chooses a random cell on the extremities of the maze.
     function chooseExtremity() {
         let x = 0;
         let y = 0;
@@ -115,11 +115,11 @@
         return [x, y];
     }
 
-    // Draw an empty grid.
+    // Draws an empty grid.
     function resetGrid() {
         cellMap = new Array(mazeSize);
     
-        // Reset the container.
+        // Resets the container.
         document.getElementById('grid-container').innerHTML = "";
         clearInterval(global.currentInterval);
     
@@ -131,7 +131,7 @@
         
                 document.getElementById('grid-container').append(div);
 
-                // Append wall to map.
+                // Appends wall to map.
                 if(typeof cellMap[i] === 'undefined') {
                     cellMap[i] = new Array(mazeSize);
                 }
@@ -142,7 +142,7 @@
     }
 
     /**
-     * Check for a given wall if it can be opened.
+     * Checks for a given wall if it can be opened.
      * 
      * This is the main condition that will shape the maze and make it more or less 'maze-like'.
      * 
@@ -236,17 +236,17 @@
             if(frontier.length === 0) { // Exit condition.
                 clearInterval(global.currentInterval);
 
-                // Draw the starting cell
+                // Draws the starting cell.
                 cellMap[start[0]][start[1]] = 'start';
                 drawCell(start[0], start[1], 'start');
 
-                // Save the ending cell
+                // Saves the ending cell.
                 if(document.getElementsByClassName('end').length > 0) {
                     const cell = document.getElementsByClassName('end')[0].id.replace('[','').replace(']','').split(',');
                     cellMap[cell[0]][cell[1]] = 'end';
                 }
 
-                maze.cellMap = cellMap; // Update the finished map.
+                maze.cellMap = cellMap; // Updates the finished map.
 
                 console.log('exit');
 
@@ -260,7 +260,7 @@
                 // 2 - If only one of the cells that the wall divides is visited, then:
                 if(checkNeighbors(x, y, chosenCell[2])) {
                     
-                    // Remove the previous red cell so that only the current cell is colored red.
+                    // Removes the previous red cell so that only the current cell is colored red.
                     if(document.getElementsByClassName('end').length > 0 && frontier.length > 1) {
                         document.getElementsByClassName('end')[0].className = 'passage';
                     }
@@ -296,10 +296,10 @@
 
         // -------------------- UTILITY --------------------
 
-        // Effectively 'open' a cell.
+        // Effectively 'opens' a cell.
         function mark(x, y, cellMap, visualize) {
         
-            if(validate(x, y)) { // if coordinates are in the maze
+            if(validate(x, y)) { // If coordinates are in the maze.
                 cellMap[x][y] = 'passage';
         
                 drawCell(x, y, visualize ? 'end' : 'passage');
@@ -307,7 +307,7 @@
         }
 
         /**
-         * Return the list of close visitable walls that can be opened (with the cell behind).
+         * Returns the list of close visitable walls that can be opened (with the cell behind).
          */
         function findOpenableWalls(x, y) {
 
@@ -379,7 +379,7 @@
 
                 if(checkNeighbors(x, y, chosenCell.cell[2])) {
 
-                    // Remove the previous red cell so that only the current cell is colored red.
+                    // Removes the previous red cell so that only the current cell is colored red.
                     if(document.getElementsByClassName('end').length > 0 && frontier.length > 1) {
                         document.getElementsByClassName('end')[0].className = 'passage';
                     }
@@ -414,7 +414,7 @@
 
         function mark(x, y, cellMap, visualize) {
         
-            if(validate(x, y)) { // if coordinates are in the maze
+            if(validate(x, y)) { // If coordinates are in the maze.
                 cellMap[x][y] = 'passage';
         
                 drawCell(x, y, visualize ? 'end' : 'passage');
@@ -548,9 +548,9 @@
         }
 
         /**
-         * Check for a given wall if it can be opened.
+         * Checks for a given wall if it can be opened.
          * 
-         * Count the number of passages in the area around the cell:
+         * Counts the number of passages in the area around the cell:
          * - If a direct neighbor is a passage.
          * - If a direct neighbor is a wall and the cell on the diagonal in the same direction is a passage.
          * 
@@ -653,18 +653,18 @@
             if(stack.length === 0) { // Exit condition: stack empty.
                 clearInterval(global.currentInterval);
 
-                // Draw the starting cell.
+                // Draws the starting cell.
                 cellMap[start[0]][start[1]] = 'start';
                 drawCell(start[0], start[1], 'start');
 
-                // Choose a random cell from the dead ends and make it the end.
+                // Chooses a random cell from the dead ends and make it the end.
                 const randEnd = random(0, deadEndList.length);
                 const end = deadEndList[randEnd];
 
                 cellMap[end[0]][end[1]] = 'end';
                 drawCell(end[0], end[1], 'end');
 
-                maze.cellMap = cellMap; // Update the finished map.
+                maze.cellMap = cellMap; // Updates the finished map.
 
                 console.log('exit');
 
@@ -708,7 +708,7 @@
                     }
 
                 } else {
-                    // Backtracking: mark the cell as passage since the cell will not be visited anymore.
+                    // Backtracking: marks the cell as passage since the cell will not be visited anymore.
                     drawCell(currentCell[0], currentCell[1], 'passage'); 
 
                     // Dead end: add the cell to dead end list.
@@ -721,14 +721,14 @@
 
         // -------------------- UTILITY --------------------
 
-        // Effectively 'open' a cell.
+        // Effectively 'opens' a cell.
         function mark(x, y, cellMap) {
             if(validate(x, y)) {
                 cellMap[x][y] = 'passage';
 
-                stack.push([x,y]); // Push to stack for backtracking.
+                stack.push([x,y]); // Pushes to stack for backtracking.
 
-                // Mark the cell in blue when it is visited the first time so we can better see the algorithm in action.
+                // Marks the cell in blue when it is visited the first time so we can better see the algorithm in action.
                 drawCell(x, y, 'blue');
             }
         }
@@ -753,7 +753,7 @@
         }
 
         /**
-         * Return the list of close visitable walls that can be opened (with the cell behind).
+         * Returns the list of close visitable walls that can be opened (with the cell behind).
          */
         function findOpenableWalls(x, y) {
             const openableWalls = [];
@@ -781,7 +781,7 @@
 
 
     /**
-     * Solve the maze using a simple Breadth First Search (BFS) algorithm, with early exit.
+     * Solves the maze using a simple Breadth First Search (BFS) algorithm, with early exit.
      * 
      * We explore each cell of the maze, and store the visited cells in a map, along with the cell we came from.
      * 
@@ -807,7 +807,7 @@
      * 
      * ---
      * 
-     * Once the loop terminate, we reconstruct the path using the visited map.
+     * Once the loop terminates, we reconstruct the path using the visited map.
      * 
      * The function will throw errors if the maze doesn't exists or no entry or exit can be found.
      * 
@@ -843,7 +843,7 @@
                 if(frontier.length === 0) { // Exit condition.
                     clearInterval(global.currentInterval);
 
-                    // Update the found path.
+                    // Updates the found path.
                     maze.path = findPath(visited, startCell, endCell);
 
                     console.log('exit');
@@ -853,7 +853,7 @@
                     let currentCell = frontier[0];
                     frontier.splice(0, 1);
 
-                    // Draw the cell in blue for visualization.
+                    // Draws the cell in blue for visualization.
                     if(!equals(currentCell, startCell) && !equals(currentCell, endCell)) {
                         drawCell(currentCell[0], currentCell[1], 'blue');
                     }
@@ -902,7 +902,7 @@
         }
 
         /**
-         * Reconstruct the path using the visited map:
+         * Reconstructs the path using the visited map:
          * - Each cell of the map contains the cell from where we came from.
          * - Starting from the exit, we find the cell from which we've found the exit,
          * then its previous cell, and so on.
@@ -923,7 +923,7 @@
                 }
                 current = visited.get(current.toString());
             }
-            // Append the starting cell to the path.
+            // Appends the starting cell to the path.
             path.push(startCell);
 
             return path;
