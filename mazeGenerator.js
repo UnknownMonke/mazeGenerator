@@ -610,7 +610,7 @@
      * 
      * We keep track of dead ends to choose one randomly at the end that will serve as exit.
      * 
-     * This version use cells as walls, with a double opening,
+     * This version uses cells as walls, with a double opening,
      * which means that we open the passage by opening the wall and the next cell behind, effectively opening 2 cells at each iteration, 
      * except at the frontier since we want to keep an outer wall.
      * 
@@ -786,7 +786,7 @@
      * We explore each cell of the maze, and store the visited cells in a map, along with the cell we came from.
      * 
      * All the direct neighbors of the visited cells are stored in the frontier.
-     * The frontier expand along with the number of visited cells.
+     * The frontier expands along with the number of visited cells.
      * 
      * Once we reach the exit, the algorithm stops.
      * 
